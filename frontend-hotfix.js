@@ -14,6 +14,20 @@
     } catch (_error) {}
   }
 
+  function muteBrowserAiAudio() {
+    if (window.__codexAudioMutedPatchApplied) return;
+    window.__codexAudioMutedPatchApplied = true;
+
+    const OriginalAudio = window.Audio;
+    window.Audio = function patchedAudio(...args) {
+      const audio = new OriginalAudio(...args);
+      audio.muted = true;
+      audio.volume = 0;
+      return audio;
+    };
+    window.Audio.prototype = OriginalAudio.prototype;
+  }
+
   function disableBrowserVideoCapture() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
 
@@ -104,6 +118,7 @@
   }
 
   disableBrowserVideoCapture();
+  muteBrowserAiAudio();
   applySafeAudioSettings();
 
   const observer = new MutationObserver(function () {
