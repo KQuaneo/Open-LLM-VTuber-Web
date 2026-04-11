@@ -28,6 +28,50 @@
     window.Audio.prototype = OriginalAudio.prototype;
   }
 
+  function boostLive2DMotion() {
+    const managerGetter = window.getLive2DManager;
+    if (typeof managerGetter !== "function") return;
+
+    const manager = managerGetter.call(window);
+    if (!manager || typeof manager.getModel !== "function") return;
+
+    const model = manager.getModel(0);
+    if (!model) return;
+
+    if (!model.__codexTalkMotionBoosted && typeof model.startRandomMotion === "function") {
+      const originalStartRandomMotion = model.startRandomMotion.bind(model);
+      model.startRandomMotion = function patchedStartRandomMotion(group, priority, ...rest) {
+        if (group === "Talk") {
+          const boostedPriority =
+            typeof window.PriorityForce !== "undefined"
+              ? window.PriorityForce
+              : priority;
+          return originalStartRandomMotion(group, boostedPriority, ...rest);
+        }
+        return originalStartRandomMotion(group, priority, ...rest);
+      };
+      model.__codexTalkMotionBoosted = true;
+    }
+
+    const wavHandler = model._wavFileHandler;
+    if (
+      wavHandler &&
+      !wavHandler.__codexLipSyncBoosted &&
+      typeof wavHandler.update === "function"
+    ) {
+      const originalUpdate = wavHandler.update.bind(wavHandler);
+      wavHandler.update = function patchedLipSyncUpdate(...args) {
+        const result = originalUpdate(...args);
+        if (typeof this._lastRms === "number") {
+          const boosted = Math.max(this._lastRms * 2.8, this._lastRms + 0.08);
+          this._lastRms = Math.min(6, boosted);
+        }
+        return result;
+      };
+      wavHandler.__codexLipSyncBoosted = true;
+    }
+  }
+
   function disableBrowserVideoCapture() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
 
@@ -133,8 +177,10 @@
     stopExistingVideoStreams();
     softenCameraUi();
     patchBlackPanels();
+    boostLive2DMotion();
     setInterval(patchBlackPanels, 300);
     setInterval(applySafeAudioSettings, 1000);
+    setInterval(boostLive2DMotion, 1000);
     observer.observe(document.documentElement, { childList: true, subtree: true });
   }
 
