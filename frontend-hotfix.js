@@ -132,6 +132,27 @@
     }
   }
 
+  function suppressVadMisfireNotice() {
+    const blockedTexts = new Set([
+      "Voice detected but too brief. Try speaking louder/longer, or adjust settings (lower speech threshold, lower negative threshold, reduce redemption frames).",
+      "检测到语音但过于简短，请尝试提高音量或说得更久一些，或调整识别设置（降低语音识别阈值、降低负面语音阈值、减少验证帧数）",
+    ]);
+
+    const elements = document.querySelectorAll("div, span, p, li");
+    for (const el of elements) {
+      const text = (el.textContent || "").trim();
+      if (!blockedTexts.has(text)) continue;
+
+      el.textContent = "";
+      const box = el.closest("div");
+      if (box && box.textContent.trim() === "") {
+        box.style.display = "none";
+      } else {
+        el.style.display = "none";
+      }
+    }
+  }
+
   function patchBlackPanels() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -169,6 +190,7 @@
     applySafeAudioSettings();
     stopExistingVideoStreams();
     softenCameraUi();
+    suppressVadMisfireNotice();
     patchBlackPanels();
   });
 
@@ -176,9 +198,11 @@
     applySafeAudioSettings();
     stopExistingVideoStreams();
     softenCameraUi();
+    suppressVadMisfireNotice();
     patchBlackPanels();
     boostLive2DMotion();
     setInterval(patchBlackPanels, 300);
+    setInterval(suppressVadMisfireNotice, 300);
     setInterval(applySafeAudioSettings, 1000);
     setInterval(boostLive2DMotion, 1000);
     observer.observe(document.documentElement, { childList: true, subtree: true });
