@@ -5,6 +5,10 @@
     redemptionFrames: 8,
   };
 
+  function isStaticEmotionFrontendActive() {
+    return !!document.getElementById("codex-eye-fallback");
+  }
+
   function applySafeAudioSettings() {
     try {
       localStorage.setItem("vadSettings", JSON.stringify(SAFE_VAD_SETTINGS));
@@ -12,20 +16,6 @@
       localStorage.setItem("autoStartMicOn", JSON.stringify(true));
       localStorage.setItem("autoStartMicOnConvEnd", JSON.stringify(true));
     } catch (_error) {}
-  }
-
-  function muteBrowserAiAudio() {
-    if (window.__codexAudioMutedPatchApplied) return;
-    window.__codexAudioMutedPatchApplied = true;
-
-    const OriginalAudio = window.Audio;
-    window.Audio = function patchedAudio(...args) {
-      const audio = new OriginalAudio(...args);
-      audio.muted = true;
-      audio.volume = 0;
-      return audio;
-    };
-    window.Audio.prototype = OriginalAudio.prototype;
   }
 
   function boostLive2DMotion() {
@@ -153,6 +143,43 @@
     }
   }
 
+  function suppressWebGLErrorNotice() {
+    const blockedSnippets = [
+      "webgl",
+      "cannot initialize",
+      "failed to initialize",
+      "live2d init failed",
+    ];
+
+    const elements = document.querySelectorAll("div, span, p, li, button, h1, h2, h3");
+    for (const el of elements) {
+      const text = (el.textContent || "").trim().toLowerCase();
+      if (!text) continue;
+      if (!blockedSnippets.some((snippet) => text.includes(snippet))) continue;
+
+      const box = el.closest("div[role='alert'], div[role='status'], [data-part='root'], .chakra-toast, .chakra-alert, div");
+      if (box) {
+        box.style.display = "none";
+      } else {
+        el.style.display = "none";
+      }
+    }
+  }
+
+  function suppressWebGLAlertDialogs() {
+    if (window.__codexWebGLAlertPatched) return;
+    window.__codexWebGLAlertPatched = true;
+
+    const originalAlert = window.alert;
+    window.alert = function patchedAlert(message) {
+      const text = String(message || "").toLowerCase();
+      if (text.includes("webgl") || text.includes("cannot initialize")) {
+        return;
+      }
+      return originalAlert.call(window, message);
+    };
+  }
+
   function patchBlackPanels() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -183,7 +210,7 @@
   }
 
   disableBrowserVideoCapture();
-  muteBrowserAiAudio();
+  suppressWebGLAlertDialogs();
   applySafeAudioSettings();
 
   const observer = new MutationObserver(function () {
@@ -191,6 +218,7 @@
     stopExistingVideoStreams();
     softenCameraUi();
     suppressVadMisfireNotice();
+    suppressWebGLErrorNotice();
     patchBlackPanels();
   });
 
@@ -199,12 +227,18 @@
     stopExistingVideoStreams();
     softenCameraUi();
     suppressVadMisfireNotice();
+    suppressWebGLErrorNotice();
     patchBlackPanels();
-    boostLive2DMotion();
+    if (!isStaticEmotionFrontendActive()) {
+      boostLive2DMotion();
+    }
     setInterval(patchBlackPanels, 300);
     setInterval(suppressVadMisfireNotice, 300);
+    setInterval(suppressWebGLErrorNotice, 300);
     setInterval(applySafeAudioSettings, 1000);
-    setInterval(boostLive2DMotion, 1000);
+    if (!isStaticEmotionFrontendActive()) {
+      setInterval(boostLive2DMotion, 1000);
+    }
     observer.observe(document.documentElement, { childList: true, subtree: true });
   }
 

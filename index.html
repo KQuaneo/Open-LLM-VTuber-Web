@@ -2,13 +2,230 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Open-LLM-Vtuber</title>
-    <script src="./frontend-hotfix.js?v=backendcam11"></script>
-    <script type="module" crossorigin src="./assets/main-nu7uwxNJ.js?v=backendcam11"></script>
-    <link rel="stylesheet" crossorigin href="./assets/main-QEkl09-0.css?v=backendcam11">
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #08101d;
+      }
+      body {
+        position: relative;
+      }
+      #root {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        opacity: 0.01;
+        pointer-events: none;
+      }
+      #codex-eye-frontend {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        background:
+          radial-gradient(circle at 50% 38%, rgba(79, 184, 255, 0.18), transparent 30%),
+          radial-gradient(circle at 16% 80%, rgba(113, 102, 255, 0.12), transparent 22%),
+          radial-gradient(circle at 84% 80%, rgba(113, 102, 255, 0.12), transparent 22%),
+          linear-gradient(180deg, #070d18 0%, #10192b 48%, #1a2540 100%);
+      }
+      #codex-eye-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: min(12vw, 140px);
+        z-index: 1;
+        transition: transform 180ms ease, filter 180ms ease;
+      }
+      #codex-emotion-label {
+        position: absolute;
+        top: 48px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        font: 700 34px/1.1 monospace;
+        letter-spacing: 0.18em;
+        color: #dff7ff;
+        text-transform: uppercase;
+        text-shadow: 0 0 18px rgba(91, 206, 255, 0.45);
+        opacity: 0.9;
+      }
+      .codex-eye-shell {
+        position: relative;
+        width: min(24vw, 260px);
+        height: min(18vw, 160px);
+        border-radius: 50%;
+        background: #f3f7ff;
+        border: 4px solid rgba(173, 183, 210, 0.8);
+        box-shadow:
+          0 0 80px rgba(76, 224, 255, 0.18),
+          inset 0 10px 18px rgba(110, 124, 168, 0.18);
+        overflow: hidden;
+        transition:
+          transform 180ms ease,
+          border-radius 180ms ease,
+          height 180ms ease,
+          width 180ms ease,
+          box-shadow 180ms ease;
+      }
+      .codex-eye-shell::before {
+        content: "";
+        position: absolute;
+        inset: 20% 24%;
+        border-radius: 50%;
+        background: radial-gradient(circle at 38% 34%, #c2f6ff 0%, #57d1ff 18%, #3467d7 56%, #091530 100%);
+        transition: inset 180ms ease, transform 180ms ease;
+      }
+      .codex-eye-shell::after {
+        content: "";
+        position: absolute;
+        width: 28%;
+        height: 28%;
+        left: 36%;
+        top: 36%;
+        border-radius: 50%;
+        background: #090d18;
+        box-shadow:
+          -18px -18px 0 -6px rgba(255, 255, 255, 0.96),
+          18px 18px 0 -12px rgba(205, 233, 255, 0.85);
+        transition:
+          width 180ms ease,
+          height 180ms ease,
+          left 180ms ease,
+          top 180ms ease,
+          transform 180ms ease;
+      }
+      .codex-brow {
+        position: absolute;
+        width: min(16vw, 180px);
+        height: 8px;
+        top: calc(50% - min(16vw, 180px));
+        background: rgba(14, 18, 28, 0.98);
+        border-radius: 999px;
+        box-shadow: 0 0 10px rgba(110, 173, 255, 0.2);
+        transition: transform 180ms ease, top 180ms ease, width 180ms ease;
+      }
+      .codex-brow.left {
+        transform: translateX(calc(-1 * min(17vw, 190px))) rotate(-8deg);
+      }
+      .codex-brow.right {
+        transform: translateX(min(17vw, 190px)) rotate(8deg);
+      }
+      #codex-eye-fallback.is-blinking .codex-eye-shell {
+        transform: scaleY(0.14);
+        border-radius: 999px;
+        box-shadow:
+          0 0 32px rgba(76, 224, 255, 0.12),
+          inset 0 2px 6px rgba(110, 124, 168, 0.18);
+      }
+      #codex-eye-fallback.is-blinking .codex-eye-shell::before,
+      #codex-eye-fallback.is-blinking .codex-eye-shell::after {
+        opacity: 0;
+      }
+      #codex-eye-fallback[data-emotion="happy"] .codex-eye-shell {
+        height: min(14vw, 120px);
+        transform: translateY(18px) scaleX(1.02);
+        border-radius: 46% 46% 58% 58%;
+      }
+      #codex-eye-fallback[data-emotion="happy"] .codex-eye-shell::before {
+        inset: 34% 22% 12% 22%;
+      }
+      #codex-eye-fallback[data-emotion="happy"] .codex-eye-shell::after {
+        width: 34%;
+        height: 34%;
+        left: 33%;
+        top: 30%;
+      }
+      #codex-eye-fallback[data-emotion="happy"] .codex-brow.left {
+        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(-22px) rotate(12deg);
+      }
+      #codex-eye-fallback[data-emotion="happy"] .codex-brow.right {
+        transform: translateX(min(17vw, 190px)) translateY(-22px) rotate(-12deg);
+      }
+      #codex-eye-fallback[data-emotion="sad"] .codex-eye-shell {
+        height: min(15vw, 130px);
+        transform: translateY(8px) scaleX(0.96);
+      }
+      #codex-eye-fallback[data-emotion="sad"] .codex-eye-shell::before {
+        inset: 26% 28% 18% 26%;
+        transform: translate(-6px, 12px);
+      }
+      #codex-eye-fallback[data-emotion="sad"] .codex-brow.left {
+        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(16px) rotate(26deg);
+      }
+      #codex-eye-fallback[data-emotion="sad"] .codex-brow.right {
+        transform: translateX(min(17vw, 190px)) translateY(16px) rotate(-26deg);
+      }
+      #codex-eye-fallback[data-emotion="angry"] .codex-eye-shell {
+        height: min(12vw, 104px);
+        transform: translateY(10px) scaleX(1.04);
+        border-radius: 42% 42% 52% 52%;
+      }
+      #codex-eye-fallback[data-emotion="angry"] .codex-eye-shell::before {
+        inset: 28% 22% 14% 22%;
+      }
+      #codex-eye-fallback[data-emotion="angry"] .codex-eye-shell::after {
+        width: 18%;
+        height: 18%;
+        left: 41%;
+        top: 37%;
+      }
+      #codex-eye-fallback[data-emotion="angry"] .codex-brow.left {
+        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(20px) rotate(-30deg);
+      }
+      #codex-eye-fallback[data-emotion="angry"] .codex-brow.right {
+        transform: translateX(min(17vw, 190px)) translateY(20px) rotate(30deg);
+      }
+      #codex-eye-fallback[data-emotion="surprised"] .codex-eye-shell {
+        width: min(20vw, 190px);
+        height: min(24vw, 220px);
+        transform: translateY(-6px);
+      }
+      #codex-eye-fallback[data-emotion="surprised"] .codex-eye-shell::after {
+        width: 14%;
+        height: 14%;
+        left: 43%;
+        top: 43%;
+      }
+      #codex-eye-fallback[data-emotion="surprised"] .codex-brow.left {
+        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(-34px) rotate(-2deg);
+      }
+      #codex-eye-fallback[data-emotion="surprised"] .codex-brow.right {
+        transform: translateX(min(17vw, 190px)) translateY(-34px) rotate(2deg);
+      }
+      #codex-eye-fallback[data-emotion="thinking"] .codex-eye-shell::before,
+      #codex-eye-fallback[data-emotion="thinking"] .codex-eye-shell::after {
+        transform: translate(18px, -12px);
+      }
+      #codex-eye-fallback[data-emotion="thinking"] .codex-brow.left {
+        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(4px) rotate(-18deg);
+      }
+      #codex-eye-fallback[data-emotion="thinking"] .codex-brow.right {
+        transform: translateX(min(17vw, 190px)) translateY(-18px) rotate(10deg);
+      }
+    </style>
+    <link rel="stylesheet" href="./assets/main-QEkl09-0.css?v=voice-image-1" />
+    <script src="./frontend-hotfix.js?v=voice-image-1"></script>
+    <script src="./backend-camera-patch.js?v=voice-image-1"></script>
+    <script src="./emotion-fallback.js?v=backendcam21"></script>
+    <script type="module" crossorigin src="./assets/main-nu7uwxNJ.js?v=voice-image-1"></script>
   </head>
 
   <body>
     <div id="root"></div>
+    <div id="codex-eye-frontend">
+      <div id="codex-emotion-label">NEUTRAL</div>
+      <div id="codex-eye-fallback" aria-hidden="true">
+        <div class="codex-brow left"></div>
+        <div class="codex-eye-shell"></div>
+        <div class="codex-eye-shell"></div>
+        <div class="codex-brow right"></div>
+      </div>
+    </div>
   </body>
 </html>
