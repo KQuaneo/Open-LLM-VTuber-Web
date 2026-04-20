@@ -26,11 +26,43 @@
         position: fixed;
         inset: 0;
         z-index: 999999;
+        --anime-line: #2b2132;
+        --anime-ink: #17101d;
+        --anime-glow: #8bdfff;
+        --anime-pink: #ffabc9;
+        --skin-blush: rgba(255, 154, 190, 0.24);
         background:
-          radial-gradient(circle at 50% 38%, rgba(79, 184, 255, 0.18), transparent 30%),
-          radial-gradient(circle at 16% 80%, rgba(113, 102, 255, 0.12), transparent 22%),
-          radial-gradient(circle at 84% 80%, rgba(113, 102, 255, 0.12), transparent 22%),
-          linear-gradient(180deg, #070d18 0%, #10192b 48%, #1a2540 100%);
+          radial-gradient(ellipse at 50% 58%, rgba(255, 217, 229, 0.16), transparent 35%),
+          radial-gradient(circle at 50% 42%, rgba(139, 223, 255, 0.16), transparent 30%),
+          radial-gradient(circle at 18% 74%, var(--skin-blush), transparent 20%),
+          radial-gradient(circle at 82% 74%, var(--skin-blush), transparent 20%),
+          linear-gradient(180deg, #10182d 0%, #1a1c39 48%, #2a223a 100%);
+        overflow: hidden;
+      }
+      #codex-eye-frontend::before {
+        content: "";
+        position: absolute;
+        inset: 24px;
+        border: 1px solid rgba(255, 230, 244, 0.16);
+        border-radius: 34px;
+        box-shadow:
+          inset 0 0 44px rgba(255, 230, 244, 0.07),
+          0 0 38px rgba(139, 223, 255, 0.08);
+        pointer-events: none;
+      }
+      #codex-eye-frontend::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 13% 22%, rgba(255, 255, 255, 0.95) 0 2px, transparent 3px),
+          radial-gradient(circle at 24% 13%, rgba(124, 232, 255, 0.7) 0 1px, transparent 3px),
+          radial-gradient(circle at 73% 18%, rgba(255, 255, 255, 0.9) 0 2px, transparent 3px),
+          radial-gradient(circle at 88% 31%, rgba(255, 143, 184, 0.75) 0 1px, transparent 3px),
+          linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+        background-size: auto, auto, auto, auto, 100% 7px;
+        opacity: 0.85;
+        pointer-events: none;
       }
       #codex-eye-fallback {
         position: absolute;
@@ -38,33 +70,42 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: min(12vw, 140px);
+        gap: min(8vw, 88px);
         z-index: 1;
         transition: transform 180ms ease, filter 180ms ease;
       }
       #codex-emotion-label {
         position: absolute;
-        top: 48px;
+        top: 34px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 3;
-        font: 700 34px/1.1 monospace;
-        letter-spacing: 0.18em;
-        color: #dff7ff;
+        padding: 10px 22px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        background: rgba(12, 14, 32, 0.36);
+        font: 800 20px/1.1 "Trebuchet MS", "Verdana", sans-serif;
+        letter-spacing: 0.22em;
+        color: #fff7fc;
         text-transform: uppercase;
-        text-shadow: 0 0 18px rgba(91, 206, 255, 0.45);
-        opacity: 0.9;
+        text-shadow:
+          0 0 14px rgba(255, 143, 184, 0.72),
+          0 0 26px rgba(124, 232, 255, 0.42);
+        opacity: 0.86;
       }
       .codex-eye-shell {
         position: relative;
-        width: min(24vw, 260px);
-        height: min(18vw, 160px);
-        border-radius: 50%;
-        background: #f3f7ff;
-        border: 4px solid rgba(173, 183, 210, 0.8);
+        width: min(27vw, 298px);
+        height: min(20vw, 188px);
+        border-radius: 58% 42% 54% 46% / 70% 68% 46% 48%;
+        background:
+          radial-gradient(ellipse at 45% 38%, rgba(255, 255, 255, 0.98) 0 9%, rgba(255, 250, 255, 0.98) 36%, #f0f6ff 74%, #d8e3f7 100%);
+        border: 5px solid var(--anime-line);
         box-shadow:
-          0 0 80px rgba(76, 224, 255, 0.18),
-          inset 0 10px 18px rgba(110, 124, 168, 0.18);
+          0 18px 32px rgba(0, 0, 0, 0.24),
+          0 0 38px rgba(139, 223, 255, 0.16),
+          inset 0 12px 24px rgba(96, 84, 126, 0.15),
+          inset 0 -14px 24px rgba(255, 171, 201, 0.13);
         overflow: hidden;
         transition:
           transform 180ms ease,
@@ -73,26 +114,54 @@
           width 180ms ease,
           box-shadow 180ms ease;
       }
+      .codex-eye-shell:nth-of-type(3) {
+        transform: scaleX(-1);
+      }
+      .codex-eye-shell:nth-of-type(3)::before,
+      .codex-eye-shell:nth-of-type(3)::after {
+        transform: scaleX(-1);
+      }
       .codex-eye-shell::before {
         content: "";
         position: absolute;
-        inset: 20% 24%;
-        border-radius: 50%;
-        background: radial-gradient(circle at 38% 34%, #c2f6ff 0%, #57d1ff 18%, #3467d7 56%, #091530 100%);
-        transition: inset 180ms ease, transform 180ms ease;
+        width: 39%;
+        height: 78%;
+        left: 31%;
+        top: 12%;
+        border-radius: 48% 52% 50% 50%;
+        background:
+          radial-gradient(circle at 31% 22%, #ffffff 0 9%, rgba(255, 255, 255, 0.9) 10% 13%, transparent 14%),
+          radial-gradient(circle at 58% 73%, rgba(255, 255, 255, 0.86) 0 5%, transparent 6%),
+          radial-gradient(circle at 47% 47%, #090716 0 17%, #1c1b53 18% 29%, #326bd7 42%, #67dcff 66%, #fff1fb 100%);
+        box-shadow:
+          0 0 0 4px #15142e,
+          0 0 0 9px rgba(79, 92, 180, 0.28),
+          0 0 30px rgba(93, 207, 255, 0.62),
+          inset 0 -24px 22px rgba(255, 171, 201, 0.38);
+        transition:
+          left 180ms ease,
+          top 180ms ease,
+          width 180ms ease,
+          height 180ms ease,
+          transform 180ms ease;
       }
       .codex-eye-shell::after {
         content: "";
         position: absolute;
-        width: 28%;
-        height: 28%;
-        left: 36%;
-        top: 36%;
-        border-radius: 50%;
-        background: #090d18;
+        width: 88%;
+        height: 52%;
+        left: 6%;
+        top: -21%;
+        border-radius: 0 0 54% 54%;
+        background:
+          radial-gradient(ellipse at 50% 78%, rgba(80, 57, 87, 0.18), transparent 44%),
+          linear-gradient(180deg, rgba(24, 16, 30, 0.96), rgba(24, 16, 30, 0.42) 62%, transparent);
         box-shadow:
-          -18px -18px 0 -6px rgba(255, 255, 255, 0.96),
-          18px 18px 0 -12px rgba(205, 233, 255, 0.85);
+          -58px 82px 0 -43px var(--anime-ink),
+          -33px 92px 0 -47px var(--anime-ink),
+          46px 80px 0 -43px var(--anime-ink),
+          74px 88px 0 -50px var(--anime-ink),
+          inset 0 -5px 0 rgba(255, 255, 255, 0.12);
         transition:
           width 180ms ease,
           height 180ms ease,
@@ -102,19 +171,21 @@
       }
       .codex-brow {
         position: absolute;
-        width: min(16vw, 180px);
-        height: 8px;
-        top: calc(50% - min(16vw, 180px));
-        background: rgba(14, 18, 28, 0.98);
+        width: min(17vw, 190px);
+        height: 9px;
+        top: calc(50% - min(17vw, 190px));
+        background: linear-gradient(90deg, transparent, #43324d 14%, #2b2132 88%, transparent);
         border-radius: 999px;
-        box-shadow: 0 0 10px rgba(110, 173, 255, 0.2);
+        box-shadow:
+          0 0 10px rgba(255, 171, 201, 0.22),
+          0 8px 0 -7px rgba(255, 255, 255, 0.34);
         transition: transform 180ms ease, top 180ms ease, width 180ms ease;
       }
       .codex-brow.left {
-        transform: translateX(calc(-1 * min(17vw, 190px))) rotate(-8deg);
+        transform: translateX(calc(-1 * min(18vw, 205px))) rotate(-8deg);
       }
       .codex-brow.right {
-        transform: translateX(min(17vw, 190px)) rotate(8deg);
+        transform: translateX(min(18vw, 205px)) rotate(8deg);
       }
       #codex-eye-fallback.is-blinking .codex-eye-shell {
         transform: scaleY(0.14);
@@ -123,97 +194,137 @@
           0 0 32px rgba(76, 224, 255, 0.12),
           inset 0 2px 6px rgba(110, 124, 168, 0.18);
       }
+      #codex-eye-fallback.is-blinking .codex-eye-shell:nth-of-type(3) {
+        transform: scaleX(-1) scaleY(0.14);
+      }
       #codex-eye-fallback.is-blinking .codex-eye-shell::before,
       #codex-eye-fallback.is-blinking .codex-eye-shell::after {
         opacity: 0;
       }
       #codex-eye-fallback[data-emotion="happy"] .codex-eye-shell {
-        height: min(14vw, 120px);
-        transform: translateY(18px) scaleX(1.02);
-        border-radius: 46% 46% 58% 58%;
+        height: min(19vw, 178px);
+        transform: translateY(6px) scaleX(1.025);
+        border-radius: 58% 42% 54% 46% / 68% 66% 44% 48%;
+        box-shadow:
+          0 18px 32px rgba(0, 0, 0, 0.22),
+          0 0 40px rgba(255, 171, 201, 0.16),
+          inset 0 12px 24px rgba(96, 84, 126, 0.13),
+          inset 0 -15px 26px rgba(255, 171, 201, 0.16);
       }
       #codex-eye-fallback[data-emotion="happy"] .codex-eye-shell::before {
-        inset: 34% 22% 12% 22%;
+        width: 38%;
+        height: 74%;
+        left: 32%;
+        top: 15%;
+        opacity: 1;
+        transform: translateY(2px) scaleY(0.96);
       }
       #codex-eye-fallback[data-emotion="happy"] .codex-eye-shell::after {
-        width: 34%;
-        height: 34%;
-        left: 33%;
-        top: 30%;
+        width: 88%;
+        left: 6%;
+        top: -16%;
+        height: 56%;
+        border-radius: 0 0 54% 54%;
+        background:
+          radial-gradient(ellipse at 50% 84%, rgba(255, 171, 201, 0.12), transparent 42%),
+          linear-gradient(180deg, rgba(24, 16, 30, 0.94), rgba(24, 16, 30, 0.42) 62%, transparent);
       }
       #codex-eye-fallback[data-emotion="happy"] .codex-brow.left {
-        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(-22px) rotate(12deg);
+        transform: translateX(calc(-1 * min(18vw, 205px))) translateY(-12px) rotate(6deg);
       }
       #codex-eye-fallback[data-emotion="happy"] .codex-brow.right {
-        transform: translateX(min(17vw, 190px)) translateY(-22px) rotate(-12deg);
+        transform: translateX(min(18vw, 205px)) translateY(-12px) rotate(-6deg);
       }
       #codex-eye-fallback[data-emotion="sad"] .codex-eye-shell {
-        height: min(15vw, 130px);
-        transform: translateY(8px) scaleX(0.96);
+        height: min(18vw, 160px);
+        transform: translateY(12px) scaleX(0.96) rotate(2deg);
       }
       #codex-eye-fallback[data-emotion="sad"] .codex-eye-shell::before {
-        inset: 26% 28% 18% 26%;
-        transform: translate(-6px, 12px);
+        top: 24%;
+        left: 24%;
+        transform: translate(-8px, 18px);
       }
       #codex-eye-fallback[data-emotion="sad"] .codex-brow.left {
-        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(16px) rotate(26deg);
+        transform: translateX(calc(-1 * min(18vw, 205px))) translateY(14px) rotate(24deg);
       }
       #codex-eye-fallback[data-emotion="sad"] .codex-brow.right {
-        transform: translateX(min(17vw, 190px)) translateY(16px) rotate(-26deg);
+        transform: translateX(min(18vw, 205px)) translateY(14px) rotate(-24deg);
       }
       #codex-eye-fallback[data-emotion="angry"] .codex-eye-shell {
-        height: min(12vw, 104px);
-        transform: translateY(10px) scaleX(1.04);
-        border-radius: 42% 42% 52% 52%;
+        height: min(15vw, 130px);
+        transform: translateY(10px) scaleX(1.06) skewX(-3deg);
+        border-radius: 58% 34% 54% 38% / 50% 38% 48% 42%;
+        box-shadow:
+          0 20px 36px rgba(0, 0, 0, 0.32),
+          0 0 40px rgba(255, 112, 145, 0.18),
+          inset 0 -14px 22px rgba(255, 112, 145, 0.16);
       }
       #codex-eye-fallback[data-emotion="angry"] .codex-eye-shell::before {
-        inset: 28% 22% 14% 22%;
+        width: 34%;
+        height: 62%;
+        left: 34%;
+        top: 25%;
       }
       #codex-eye-fallback[data-emotion="angry"] .codex-eye-shell::after {
-        width: 18%;
-        height: 18%;
-        left: 41%;
-        top: 37%;
+        top: -2%;
+        height: 63%;
       }
       #codex-eye-fallback[data-emotion="angry"] .codex-brow.left {
-        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(20px) rotate(-30deg);
+        transform: translateX(calc(-1 * min(18vw, 205px))) translateY(18px) rotate(-28deg);
       }
       #codex-eye-fallback[data-emotion="angry"] .codex-brow.right {
-        transform: translateX(min(17vw, 190px)) translateY(20px) rotate(30deg);
+        transform: translateX(min(18vw, 205px)) translateY(18px) rotate(28deg);
       }
       #codex-eye-fallback[data-emotion="surprised"] .codex-eye-shell {
-        width: min(20vw, 190px);
-        height: min(24vw, 220px);
+        width: min(22vw, 236px);
+        height: min(24vw, 232px);
         transform: translateY(-6px);
+        border-radius: 54% 46% 54% 46% / 68% 68% 54% 54%;
+      }
+      #codex-eye-fallback[data-emotion="surprised"] .codex-eye-shell::before {
+        width: 36%;
+        height: 64%;
+        left: 32%;
+        top: 18%;
       }
       #codex-eye-fallback[data-emotion="surprised"] .codex-eye-shell::after {
-        width: 14%;
-        height: 14%;
-        left: 43%;
-        top: 43%;
+        top: -24%;
+        height: 34%;
       }
       #codex-eye-fallback[data-emotion="surprised"] .codex-brow.left {
-        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(-34px) rotate(-2deg);
+        transform: translateX(calc(-1 * min(18vw, 205px))) translateY(-30px) rotate(-2deg);
       }
       #codex-eye-fallback[data-emotion="surprised"] .codex-brow.right {
-        transform: translateX(min(17vw, 190px)) translateY(-34px) rotate(2deg);
+        transform: translateX(min(18vw, 205px)) translateY(-30px) rotate(2deg);
       }
       #codex-eye-fallback[data-emotion="thinking"] .codex-eye-shell::before,
       #codex-eye-fallback[data-emotion="thinking"] .codex-eye-shell::after {
         transform: translate(18px, -12px);
       }
       #codex-eye-fallback[data-emotion="thinking"] .codex-brow.left {
-        transform: translateX(calc(-1 * min(17vw, 190px))) translateY(4px) rotate(-18deg);
+        transform: translateX(calc(-1 * min(18vw, 205px))) translateY(2px) rotate(-16deg);
       }
       #codex-eye-fallback[data-emotion="thinking"] .codex-brow.right {
-        transform: translateX(min(17vw, 190px)) translateY(-18px) rotate(10deg);
+        transform: translateX(min(18vw, 205px)) translateY(-16px) rotate(9deg);
+      }
+      @media (max-width: 720px) {
+        #codex-eye-fallback {
+          gap: 7vw;
+        }
+        .codex-eye-shell {
+          width: 34vw;
+          height: 27vw;
+        }
+        .codex-brow {
+          display: none;
+        }
       }
     </style>
-    <link rel="stylesheet" href="./assets/main-QEkl09-0.css?v=voice-image-1" />
-    <script src="./frontend-hotfix.js?v=voice-image-1"></script>
-    <script src="./backend-camera-patch.js?v=voice-image-1"></script>
-    <script src="./emotion-fallback.js?v=backendcam21"></script>
-    <script type="module" crossorigin src="./assets/main-nu7uwxNJ.js?v=voice-image-1"></script>
+    <link rel="stylesheet" href="./assets/main-QEkl09-0.css?v=live2d-eyes-3" />
+    <script src="./frontend-hotfix.js?v=live2d-eyes-3"></script>
+    <script src="./backend-camera-patch.js?v=live2d-eyes-3"></script>
+    <script src="./emotion-fallback.js?v=live2d-eyes-3"></script>
+    <script type="module" crossorigin src="./assets/main-nu7uwxNJ.js?v=live2d-eyes-3"></script>
   </head>
 
   <body>
