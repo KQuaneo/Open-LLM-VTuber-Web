@@ -19,6 +19,7 @@
     root: null,
     label: null,
     emotion: "neutral",
+    responseEmotion: "neutral",
     emotionUntil: 0,
     speakingUntil: 0,
     thinkingUntil: 0,
@@ -65,15 +66,25 @@
   }
 
   function setThinking(durationMs) {
+    state.responseEmotion = "neutral";
     state.thinkingUntil = nowMs() + (durationMs || 2600);
     applyEmotion();
   }
 
   function setSpeaking(emotion, durationMs) {
-    state.emotion = mapEmotion(emotion || "happy");
+    state.emotion = mapEmotion(emotion || state.responseEmotion || "neutral");
+    state.responseEmotion = state.emotion;
     state.thinkingUntil = 0;
     state.speakingUntil = nowMs() + (durationMs || 2200);
     state.emotionUntil = state.speakingUntil;
+    applyEmotion();
+  }
+
+  function finishSpeaking() {
+    const now = nowMs();
+    state.thinkingUntil = 0;
+    state.speakingUntil = Math.max(state.speakingUntil, now + 700);
+    state.emotionUntil = Math.max(state.emotionUntil, now + 1400);
     applyEmotion();
   }
 
@@ -95,7 +106,7 @@
       if (payload.text === "conversation-chain-start") {
         setThinking(3200);
       } else if (payload.text === "conversation-chain-end") {
-        setEmotion("neutral", 800);
+        finishSpeaking();
       }
       return;
     }
@@ -106,7 +117,6 @@
     }
 
     if (payload.type === "user-input-transcription") {
-      setEmotion("surprised", 1000);
       blinkOnce();
       return;
     }
@@ -116,9 +126,16 @@
         payload.actions && Array.isArray(payload.actions.emotion_tags)
           ? payload.actions.emotion_tags
           : [];
-      const emotion = emotionTags.length ? emotionTags[emotionTags.length - 1] : "happy";
+
+      if (!payload.audio) {
+        if (emotionTags.length && nowMs() >= state.speakingUntil) {
+          setEmotion(emotionTags[emotionTags.length - 1], 1600);
+        }
+        return;
+      }
+
+      const emotion = emotionTags.length ? emotionTags[emotionTags.length - 1] : state.responseEmotion;
       setSpeaking(emotion, estimateAudioDurationMs(payload));
-      blinkOnce();
     }
   }
 
