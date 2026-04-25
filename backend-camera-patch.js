@@ -38,10 +38,7 @@
       try {
         if (typeof data === "string" && state.latestFrame) {
           const payload = JSON.parse(data);
-          if (
-            payload &&
-            ["text-input", "mic-audio-end", "ai-speak-signal"].includes(payload.type)
-          ) {
+          if (payload && shouldAttachCamera(payload)) {
             const images = Array.isArray(payload.images) ? payload.images.slice() : [];
             images.push({
               source: "camera",
@@ -57,6 +54,49 @@
       }
       return originalSend.call(this, nextData);
     };
+  }
+
+  function shouldAttachCamera(payload) {
+    if (!payload || payload.type !== "text-input") return false;
+    const text = typeof payload.text === "string" ? payload.text.toLowerCase() : "";
+    if (!text) return false;
+
+    return [
+      "画面",
+      "图片",
+      "图里",
+      "图中",
+      "照片",
+      "截图",
+      "屏幕",
+      "摄像头",
+      "镜头",
+      "视频",
+      "看图",
+      "看看",
+      "看到",
+      "看见",
+      "看得见",
+      "能看到",
+      "能看见",
+      "我在干嘛",
+      "我在做什么",
+      "我长什么样",
+      "我手上",
+      "我手里",
+      "我拿着",
+      "我拿了",
+      "这个是什么",
+      "这是什么",
+      "这是啥",
+      "what do you see",
+      "what is in the image",
+      "what's in the image",
+      "what is on the screen",
+      "what am i holding",
+      "what is in my hand",
+      "what's in my hand",
+    ].some((keyword) => text.includes(keyword));
   }
 
   function start() {
